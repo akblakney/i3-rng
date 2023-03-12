@@ -142,7 +142,7 @@ fn rand_from_daemon(stream: &mut TcpStream, n: usize, harden: bool) -> Result<Ve
   let mut plaintext: Vec<u8> = vec![0; n];
   if harden {
     let mut f = File::open("/dev/urandom").unwrap();
-    f.read_exact(&mut plaintext);
+    f.read_exact(&mut plaintext).unwrap();
   }
 
   println!("plaintext was: {:?}", plaintext);
