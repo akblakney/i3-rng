@@ -74,4 +74,5 @@ i3-rng rand -f ascii | head -c 16
   then truncate the output to 16 characters with head.
 
 i3-rng rand -n 1000
+  print 1KB of random output to stdout
 ```
