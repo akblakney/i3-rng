@@ -1,3 +1,4 @@
+use std::fs::File;
 use std::net::TcpStream;
 use std::io::Write;
 use std::io::Read;
@@ -39,9 +40,11 @@ pub fn handle_rand(stream: &mut TcpStream, args: &Vec<String>) {
     Err(_) => DEFAULT_FORMAT,
   };
 
+  // harden parameters
+  let harden: bool = args.contains(&"--harden".to_string());
 
   //let rand_out = rand_from_daemon(stream, args[2].parse::<usize>().unwrap());
-  let rand_out = rand_from_daemon(stream, num_bytes);
+  let rand_out = rand_from_daemon(stream, num_bytes, harden);
   let rand_out = match rand_out {
     Ok(rand_out) => rand_out,
     Err(e) => {
@@ -117,7 +120,7 @@ fn rand_from_charset<'a>(charset: &'a str, rand: Vec<u8>, buffer: &'a mut String
 }
   
 
-fn rand_from_daemon(stream: &mut TcpStream, n: usize) -> Result<Vec<u8>, String> {
+fn rand_from_daemon(stream: &mut TcpStream, n: usize, harden: bool) -> Result<Vec<u8>, String> {
 
   // get key from daemon
   let mut buf: [u8; BUF_SIZE] = [0; BUF_SIZE];
@@ -135,7 +138,15 @@ fn rand_from_daemon(stream: &mut TcpStream, n: usize) -> Result<Vec<u8>, String>
     key
   };
   let nonce = [0; 12];
+  
   let mut plaintext: Vec<u8> = vec![0; n];
+  if harden {
+    let mut f = File::open("/dev/urandom").unwrap();
+    f.read_exact(&mut plaintext);
+  }
+
+  println!("plaintext was: {:?}", plaintext);
+
   let mut cipher = ChaCha20::new(&key.into(), &nonce.into());
   cipher.apply_keystream(&mut plaintext);
   return Ok(plaintext);
