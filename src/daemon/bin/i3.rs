@@ -6,7 +6,8 @@ use std::time::{Instant};//, SystemTime, Duration};
 use blake2::{Digest};
 use std::sync::{Arc, Mutex};//mpsc;
 use crate::structs::{HashObj};
-use crate::constants::{MIN_ENTROPY};
+use crate::constants::{MIN_ENTROPY,BITS_PER_USER_INPUT};
+use byteorder::{ByteOrder, LittleEndian};
 
 pub fn i3_listener(hash_mut: Arc<Mutex<HashObj>>) {
 
@@ -39,20 +40,20 @@ pub fn i3_listener(hash_mut: Arc<Mutex<HashObj>>) {
 
 pub fn handle_binding_event(command: String, prev_time: &mut Instant, hash_mut: &Arc<Mutex<HashObj>>) {
 
-  println!("received i3 command: {}", command);
-
   // unlock hasher mutex object
   let mut hash_obj = hash_mut.lock().unwrap();
 
-  let lsb_time: [u8; 1] = [(prev_time.elapsed().as_nanos() % 256).try_into().unwrap()];
+  let nanos: u128 = prev_time.elapsed().as_nanos();
+  let mut buf: [u8; 16] = [0u8; 16];
+  LittleEndian::write_u128(&mut buf, nanos);
+  hash_obj.hasher.update(buf);
+  println!("updated on nanos time: {:?}", buf);
 
-//  println!("adding {:?} to entropy pool", lsb_time);
-  hash_obj.hasher.update(lsb_time);
-//  println!("adding {} to entropy pool", command);
   hash_obj.hasher.update(command.as_bytes());
+  println!("updated on command: {}", command);
 
   if hash_obj.entropy_est < MIN_ENTROPY {
-    hash_obj.entropy_est += 2;
+    hash_obj.entropy_est += BITS_PER_USER_INPUT;
   }
   println!("entropy est: {}", hash_obj.entropy_est);
 

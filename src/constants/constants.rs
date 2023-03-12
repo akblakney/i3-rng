@@ -14,3 +14,5 @@ pub const MIN_ENTROPY: u16 = 512;
 
 // size of output of blake2s
 pub const HASH_SIZE: usize = 32;
+
+pub const BITS_PER_USER_INPUT: u16 = 8;
