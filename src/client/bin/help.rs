@@ -18,7 +18,7 @@ i3-rng query
   the daemon blocks output until 512 bits of entropy are collected.
 
 i3-rng rand [-n <number of bytes>] [-f bytes | ascii | alpha-numeric 
-  | Alpha-numeric | hex | digits]
+  | Alpha-numeric | hex | digits] [--harden]
 
   NOTE: this command will return an error exit status when the daemon has
   insufficient entropy.
@@ -31,6 +31,8 @@ i3-rng rand [-n <number of bytes>] [-f bytes | ascii | alpha-numeric
 
   -f=format gives the output format. Defaults to bytes. alpha-numeric is
   lower-case only while Alpha-numeric is mixed case.
+
+  --harden combines entropy from i3wm with random output from /dev/urandom.
 
 EXAMPLES:
 
