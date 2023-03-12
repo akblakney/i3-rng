@@ -145,7 +145,7 @@ fn rand_from_daemon(stream: &mut TcpStream, n: usize, harden: bool) -> Result<Ve
     f.read_exact(&mut plaintext).unwrap();
   }
 
-  println!("plaintext was: {:?}", plaintext);
+  //println!("plaintext was: {:?}", plaintext);
 
   let mut cipher = ChaCha20::new(&key.into(), &nonce.into());
   cipher.apply_keystream(&mut plaintext);
