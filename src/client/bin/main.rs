@@ -22,14 +22,17 @@ fn main() {
   }
 
   let command = String::from(&args[1]);
+  if command == "help" || command == "-h" || command == "--help" {
+    help::handle_help();
+    std::process::exit(0);
+  }
+
   let mut stream = TcpStream::connect(ADDR).unwrap();
 
   if command == "query" {
     query::handle_query(&mut stream);
   } else if command == "rand" {
     rand::handle_rand(&mut stream, &args);
-  } else if command == "help" || command == "-h" || command == "--help" {
-    help::handle_help();
   } else {
     println!("nothing to be done");
   }
