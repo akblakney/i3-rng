@@ -29,7 +29,8 @@ i3-rng rand [-n <number of bytes>] [-f bytes | ascii | alpha-numeric
   byte is required for one character of output. To generate strings of a certain
   length, use a larger value for -n and then truncate. See examples.
 
-  -f=format gives the output format. Defaults to bytes.
+  -f=format gives the output format. Defaults to bytes. alpha-numeric is
+  lower-case only while Alpha-numeric is mixed case.
 
 EXAMPLES:
 
