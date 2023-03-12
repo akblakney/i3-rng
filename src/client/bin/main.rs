@@ -6,6 +6,7 @@ mod constants;
 mod query;
 mod rand;
 mod params;
+mod help;
 use crate::constants::{ADDR};
 
 
@@ -25,9 +26,10 @@ fn main() {
 
   if command == "query" {
     query::handle_query(&mut stream);
-  }
-  else if command == "rand" {
+  } else if command == "rand" {
     rand::handle_rand(&mut stream, &args);
+  } else if command == "help" {
+    help::handle_help();
   } else {
     println!("nothing to be done");
   }
