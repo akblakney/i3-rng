@@ -126,7 +126,6 @@ fn rand_from_daemon(stream: &mut TcpStream, n: usize) -> Result<Vec<u8>, String>
 
   // insufficient entropy
   if buf[HASH_SIZE] != 0 {
-    println!("insufficient entropy for hash");
     return Err("no hash from server due to insufficient entropy".to_string());
   }
 
