@@ -29,7 +29,7 @@ Now, the daemon which runs in the background is accessible with `i3-rngd` and th
 Run with `i3-rng help` to see help menu. Here it is reproduced below:
 
 ```
-DESCRIPTION: a random number generator based on entropy gathered                                                                                                                                                  
+DESCRIPTION: a random number generator based on entropy gathered
 from the i3 window manager in the background. Follow the installation process                                                                                                                                     
 at https://github.com/akblakney/i3-rng and make sure the daemon process, 
 i3-rngd, is running in the background to use i3-rng. 
