@@ -1,0 +1,36 @@
+use std::env;
+use std::net::TcpStream;
+
+#[path = "../../constants/constants.rs"]
+mod constants;
+mod query;
+mod rand;
+mod params;
+use crate::constants::{ADDR};
+
+
+fn main() {
+
+  // get command lines to send
+  let args: Vec<String> = env::args().collect();
+
+  // TODO add help and print to stderr
+  if args.len() < 2 {
+    println!("invalid command");
+    std::process::exit(1);
+  }
+
+  let command = String::from(&args[1]);
+  let mut stream = TcpStream::connect(ADDR).unwrap();
+
+  if command == "query" {
+    query::handle_query(&mut stream);
+  }
+  else if command == "rand" {
+    rand::handle_rand(&mut stream, &args);
+  } else {
+    println!("nothing to be done");
+  }
+  
+
+}
