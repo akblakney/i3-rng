@@ -44,14 +44,14 @@ pub fn handle_rand(stream: &mut TcpStream, args: &Vec<String>) {
   let harden: bool = args.contains(&"--harden".to_string());
 
   //let rand_out = rand_from_daemon(stream, args[2].parse::<usize>().unwrap());
-  let rand_out = rand_from_daemon(stream, num_bytes, harden);
-  let rand_out = match rand_out {
-    Ok(rand_out) => rand_out,
-    Err(e) => {
-      eprintln!("error: {}", e);
-      std::process::exit(1);
-    }
-  };
+  let rand_out = rand_from_daemon(stream, num_bytes, harden).unwrap();
+//  let rand_out = match rand_out {
+//    Ok(rand_out) => rand_out,
+//    Err(e) => {
+//      eprintln!("error: {}", e);
+//      std::process::exit(1);
+//    }
+//  };
 
   let mut buffer: String = "".to_owned();
   match format {

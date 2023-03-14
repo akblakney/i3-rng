@@ -24,7 +24,7 @@ pub fn rng_server_listen(hash_mut: Arc<Mutex<HashObj>>) {
       Ok(mut stream) => {
         handle_stream(&mut stream, &hash_mut);
       },
-      Err(e) => println!("Error: {}", e)
+      Err(e) => eprintln!("Error: {}", e)
     }
   } 
 }
@@ -39,7 +39,7 @@ fn handle_stream(stream: &mut TcpStream, hash_mut: &Arc<Mutex<HashObj>>) {
   let num_bytes_read = match read_result {
     Ok(n) => n,
     Err(error) => {
-      println!("error reading from stream: {:?}", error);
+      eprintln!("error reading from stream: {:?}", error);
       return;
     }
   };
@@ -51,9 +51,8 @@ fn handle_stream(stream: &mut TcpStream, hash_mut: &Arc<Mutex<HashObj>>) {
   // message from client
   let client_msg: &str = str::from_utf8(&buf[0..num_bytes_read]).unwrap();
   match client_msg {
-    //"query" => println!("{} bits of entropy", hash_obj.entropy_est),
+    //"query" => eprintln!("{} bits of entropy", hash_obj.entropy_est),
     "query" => handle_query(hash_mut, stream),
-    "get-hash" => handle_get_hash(hash_mut, stream),
     "rand" => handle_get_hash(hash_mut, stream),
     _ => handle_invalid_message(stream),
   }
@@ -62,7 +61,7 @@ fn handle_stream(stream: &mut TcpStream, hash_mut: &Arc<Mutex<HashObj>>) {
 
 fn handle_invalid_message(stream: &mut TcpStream) {
   match stream.write(b"Invalid message") {
-    Err(e) => println!("error writing to stream: {}", e),
+    Err(e) => eprintln!("error writing to stream: {}", e),
     _ => (),
   }
 }
@@ -74,7 +73,7 @@ fn handle_query(hash_mut: &Arc<Mutex<HashObj>>, stream: &mut TcpStream) {
   LittleEndian::write_u16(&mut buf, hash_obj.entropy_est);
   
   match stream.write(&buf) {
-    Err(e) => println!("error writing to stream: {}", e),
+    Err(e) => eprintln!("error writing to stream: {}", e),
     _ => (),
   }
 
@@ -89,7 +88,7 @@ fn handle_get_hash(hash_mut: &Arc<Mutex<HashObj>>, stream: &mut TcpStream) {
   // not enough entropy, warn client and exit
   if hash_obj.entropy_est < MIN_ENTROPY {
     match stream.write(&INSUFFICIENT_ENTROPY_HASH) {
-      Err(e) => println!("error writing to stream: {}",e),
+      Err(e) => eprintln!("error writing to stream: {}",e),
       _ => (),
     }
     return;
@@ -123,7 +122,6 @@ fn handle_get_hash(hash_mut: &Arc<Mutex<HashObj>>, stream: &mut TcpStream) {
   let post_hash2: [u8; HASH_SIZE] = Blake2s256::digest(pre_hash2).as_slice()
     .try_into().expect("wrong length of hash");
 
-
   hash_obj.hasher.update(post_hash1);
    
   let msg: [u8; 64] = {
@@ -136,7 +134,7 @@ fn handle_get_hash(hash_mut: &Arc<Mutex<HashObj>>, stream: &mut TcpStream) {
   };
 
   match stream.write(&msg) {
-    Err(e) => println!("error writing to stream: {}",e),
+    Err(e) => eprintln!("error writing to stream: {}",e),
     _ => (),
   }
 

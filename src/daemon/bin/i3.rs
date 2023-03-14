@@ -22,19 +22,13 @@ pub fn i3_listener(hash_mut: Arc<Mutex<HashObj>>) {
 
   for event in listener.listen() {
     match event.unwrap() {
-
-      // binding events
       Event::BindingEvent(e) => {
         handle_binding_event(e.binding.command, &mut start_time, &hash_mut);
       },
       Event::ModeEvent(e) => println!("new mode: {}", e.change),
-
-      // misc event
       _ => unreachable!()
-//      _ => (),
     }
   }
-
 }
 
 
@@ -55,7 +49,6 @@ pub fn handle_binding_event(command: String, prev_time: &mut Instant, hash_mut: 
   if hash_obj.entropy_est < MIN_ENTROPY {
     hash_obj.entropy_est += BITS_PER_USER_INPUT;
   }
-  println!("entropy est: {}", hash_obj.entropy_est);
 
   println!();
 
