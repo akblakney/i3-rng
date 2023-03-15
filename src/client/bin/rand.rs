@@ -132,7 +132,7 @@ fn rand_from_daemon(stream: &mut TcpStream, n: usize, harden: bool) -> Result<Ve
     return Err("no hash from server due to insufficient entropy".to_string());
   }
 
-  let key: [u8; HASH_SIZE] = {
+  let mut key: [u8; HASH_SIZE] = {
     let mut key = [0u8; HASH_SIZE];
     for i in 0..HASH_SIZE { key[i] = buf[i]; }
     key
@@ -140,9 +140,17 @@ fn rand_from_daemon(stream: &mut TcpStream, n: usize, harden: bool) -> Result<Ve
   let nonce = [0; 12];
   
   let mut plaintext: Vec<u8> = vec![0; n];
+
   if harden {
+
+    let mut dev_urandom: Vec<u8> = vec![0; HASH_SIZE];
     let mut f = File::open("/dev/urandom").unwrap();
-    f.read_exact(&mut plaintext).unwrap();
+    f.read_exact(&mut dev_urandom).unwrap();
+
+    // xor urandom output with key
+    for i in 0..HASH_SIZE {
+      key[i] = key[i] ^ dev_urandom[i];
+    }
   }
 
   //println!("plaintext was: {:?}", plaintext);
