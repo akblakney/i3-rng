@@ -12,6 +12,7 @@ use crate::structs::{HashObj};
 const BUF_SIZE: usize = 128;
 const PAD1: u8 = 0;
 const PAD2: u8 = 7;
+const PADDED_HASH_SIZE: usize = HASH_SIZE + 8;
 
 pub fn rng_server_listen(hash_mut: Arc<Mutex<HashObj>>) {
 
@@ -99,15 +100,15 @@ fn handle_get_hash(hash_mut: &Arc<Mutex<HashObj>>, stream: &mut TcpStream) {
 
   // hash the output of the hash of the pool padded with 0s, then with 
   // nonzero (arbitrary) values, to get two separate, independent 256 bit output values
-  let pre_hash1: [u8; 36] = {
-    let mut pre_hash1: [u8; 36] = [PAD1; 36];
+  let pre_hash1: [u8; PADDED_HASH_SIZE] = {
+    let mut pre_hash1: [u8; PADDED_HASH_SIZE] = [PAD1; PADDED_HASH_SIZE];
     for i in 0..HASH_SIZE { 
       pre_hash1[i] = pool_out[i];
     }
     pre_hash1
   };
-  let pre_hash2: [u8; 36] = {
-    let mut pre_hash2: [u8; 36] = [PAD2; 36];
+  let pre_hash2: [u8; PADDED_HASH_SIZE] = {
+    let mut pre_hash2: [u8; PADDED_HASH_SIZE] = [PAD2; PADDED_HASH_SIZE];
     for i in 0..HASH_SIZE { 
       pre_hash2[i] = pool_out[i];
     }
