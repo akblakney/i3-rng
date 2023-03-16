@@ -34,7 +34,8 @@ fn main() {
   } else if command == "rand" {
     rand::handle_rand(&mut stream, &args);
   } else {
-    println!("nothing to be done");
+    eprintln!("invalid command, run 'i3-rng help' for help menu");
+    std::process::exit(1);
   }
   
 
