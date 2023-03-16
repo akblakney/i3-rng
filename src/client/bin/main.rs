@@ -17,7 +17,7 @@ fn main() {
 
   // TODO add help and print to stderr
   if args.len() < 2 {
-    println!("invalid command, run with --help or help to see options");
+    eprintln!("invalid command, run with --help or help to see options");
     std::process::exit(1);
   }
 
