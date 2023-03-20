@@ -12,7 +12,7 @@ pub fn handle_query(stream: &mut TcpStream) {// -> Result<u8, String> {
   stream.read(&mut buf).unwrap();
 
   let entropy_est: u16 = LittleEndian::read_u16(&buf);
-  println!("entropy estimate: {}", entropy_est);
+  println!("entropy: {} bits", entropy_est);
   std::process::exit(0);
 
 }
