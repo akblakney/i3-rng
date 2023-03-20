@@ -124,8 +124,8 @@ fn rand_from_daemon(stream: &mut TcpStream, n: usize, harden: bool) -> Result<Ve
 
   // get key from daemon
   let mut buf: [u8; BUF_SIZE] = [0; BUF_SIZE];
-  stream.write(b"rand").unwrap();
-  stream.read(&mut buf).unwrap();
+  stream.write(b"rand").expect("failed to write to stream");
+  stream.read(&mut buf).expect("failed to read from stream");
 
   // insufficient entropy
   if buf[HASH_SIZE] != 0 {
