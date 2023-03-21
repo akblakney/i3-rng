@@ -4,6 +4,7 @@ use std::io::Write;
 use std::io::Read;
 use chacha20::ChaCha20;
 use chacha20::cipher::{KeyIvInit, StreamCipher};
+use byteorder::{LittleEndian, ByteOrder};
 
 #[path = "../../constants/constants.rs"]
 mod constants;
@@ -57,6 +58,13 @@ pub fn handle_rand(stream: &mut TcpStream, args: &Vec<String>) {
   match format {
     "bytes" => std::io::stdout().write_all(&rand_out).unwrap(),
     "hex" => println!("{}",hex::encode(&rand_out)),
+    "binary" => {
+      for i in 0..rand_out.len() {
+        let tmp = rand_out[i];
+        print!("{tmp:b}")
+      }
+      println!("");
+    },
     "digits" => {
       rand_from_charset(&DIGITS, rand_out, &mut buffer);
       println!("{}",buffer);
@@ -76,11 +84,36 @@ pub fn handle_rand(stream: &mut TcpStream, args: &Vec<String>) {
       rand_from_charset(&charset, rand_out, &mut buffer);
       println!("{}",buffer);
     },
+    "u8" => {
+      let result = extract_u8s(0u8, 12u8, &rand_out);
+      println!("{:?}", result);
+//      match result {
+//        Some(x) => println!("{}",x),
+//        None => (),
+//      }
+    },
+    "u16" => {
+      println!("{:?}", unbiased_u16(0u16, 2300u16, LittleEndian::read_u16(&rand_out[0..2])));
+    },
     _ => {
     eprintln!("invalid format");
     std::process::exit(1);
     }
   }
+}
+
+fn extract_u8s(a: u8, b:u8, r: &[u8]) -> Vec<u8> {
+  let mut i: usize = 0;
+  let mut ret: Vec<u8> = Vec::new();
+  while i < r.len() {
+    let result = unbiased_u8(a, b, r[i]);
+    match result {
+      Some(x) => ret.push(x),
+      None => (),
+    }
+    i += 1;
+  }
+  ret
 }
 
 // returns a Result with a random value in [a, b) if success
@@ -97,6 +130,26 @@ fn unbiased_u8(a: u8, b: u8, r: u8) -> Option<u8> {
     return Some(0);
   }
   let val: u8 = r / divisor;
+  if val < range {
+    return Some(val + a);
+  }
+  None
+}
+
+// returns a Result with a random value in [a, b) if success
+fn unbiased_u16(a: u16, b: u16, r: u16) -> Option<u16> {
+
+  if b <= a {
+    eprintln!("Error: invalid range");
+    std::process::exit(1);
+  }
+
+  let range = b - a;
+  let divisor: u16 = ((!range) / range) + 1;
+  if divisor == 0 { //overflow is 2**8
+    return Some(0);
+  }
+  let val: u16 = r / divisor;
   if val < range {
     return Some(val + a);
   }
