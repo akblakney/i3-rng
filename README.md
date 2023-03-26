@@ -8,7 +8,7 @@ RNGs have two main components: a source of entropy, or "randomness", and a mecha
 
 The second component, transforming the entropy into a desired target distribution (in this case the uniform distribution of raw byte values, which can then be used to generate random characters, hex strings, etc.), is done in a manner very similar to the Linux kernel's RNG, `/dev/random` ([source code](https://elixir.bootlin.com/linux/latest/source/drivers/char/random.c)). Namely, the `blake2` hash function is used to collect and store entropy (by performing updates on the raw entropy coming from the i3-wm events), and this entropy is then expanded into a stream of arbitrary length by the `chacha20` stream cipher. The default Rust implementations of these cryptographic functions are used. 
 
-## Installation
+## Installation (Linux only)
 First, clone the repository:
 ```
 git clone https://github.com/akblakney/i3-rng.git
