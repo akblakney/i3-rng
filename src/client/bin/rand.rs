@@ -121,7 +121,7 @@ fn get_u8_range_args(args: &Vec<String>) -> Option<(u8, u8)> {
   Some((a,b))
 }
 
-// same as u8
+// same as u8  
 fn get_u16_range_args(args: &Vec<String>) -> Option<(u16, u16)> {
   if !args.contains(&"--range".to_string()) {
     return None;
